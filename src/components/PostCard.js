@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {useSelector} from "react-redux";
 import PostImages from "./PostImages";
 import CommentForm from "./CommentForm";
+import PostCardContent from "./PostCardContent";
 
 const ButtonGroup = Button.Group;
 
@@ -57,7 +58,8 @@ const PostCard = ({post}) => {
                         {post.User.nickname}
                     </Avatar>}
                     title ={post.User.nickname}
-                    description={post.content}/>
+                    description={<PostCardContent postData = {post.content}/>}
+                />
             </Card>
             {commentFormOpened && (
                 <div>
@@ -73,7 +75,6 @@ const PostCard = ({post}) => {
                                     avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
                                     content={item.content}
                                 />
-
 
                             </li>
                         )}

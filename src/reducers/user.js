@@ -4,20 +4,75 @@ export const initialState = {
     signUpData: {},
     loginData: {},
 };
+export const loginAction = (data) =>{
+    return (dispatch , getState) =>{
+        const state = getState();
+        dispatch(loginRequestAction());
+        axios.post('/api/login')
+            .then((res)=>{
+                dispatch(loginSuccessAction(res.data));
+            })
+            .catch((res)=>{
+                dispatch(loginFailureAction(res.data));
+            })
+    }
+}
 
-export const loginAction= (data) =>{
+export const logoutAction = (data) =>{
+    return (dispatch , getState) =>{
+        const state = getState();
+        dispatch(loginRequestAction());
+        axios.post('/api/login')
+            .then((res)=>{
+                dispatch(loginSuccessAction(res.data));
+            })
+            .catch((res)=>{
+                dispatch(loginFailureAction(res.data));
+            })
+    }
+}
+export const loginSuccessAction= (data) =>{
     return{
-        type:'LOG_IN',
+        type:'LOG_IN_SUCCESS',
+        data,
+    }
+};
+export const loginFailureAction= (data) =>{
+    return{
+        type:'LOG_IN_FAILURE',
+        data,
+    }
+};
+export const logoutSuccessAction = (data) =>{
+    return{
+        type:'LOG_OUT_SUCCESS',
+        data,
+    }
+}
+
+
+export const logoutFaliureAction = (data) =>{
+    return{
+        type:'LOG_OUT_FAILURE',
+        data,
+    }
+}
+
+
+export const logoutRequestAction = (data) =>{
+    return{
+        type:'LOG_OUT_REQUEST',
+        data,
+    }
+}
+
+export const loginRequestAction= (data) =>{
+    return{
+        type:'LOG_IN_REQUEST',
         data,
     }
 };
 
-export const logoutAction = (data) =>{
-    return{
-        type:'LOG_OUT',
-        data,
-    }
-}
 
 const reducer = (state = initialState , action) =>{
     switch (action.type) {
