@@ -3,15 +3,20 @@ import AppLayout from "../components/AppLayout";
 import Head from "next/head"
 import  {Form,Input , Checkbox , Button} from 'antd'
 import styled from 'styled-components'
+import {useDispatch, useSelector} from "react-redux";
+import {SIGN_UP_REQUEST} from "../reducers/user";
 
-const ErrorMesaage = styled.div`
+const ErrorMessage = styled.div`
 
 `;
 
 
 
 const SignUp = () => {
-    const [id , setId] = useState("");
+    const dispatch = useDispatch();
+    const signUpLoading = useSelector((state)=>state.user.signUpData)
+
+    const [email , setEmail] = useState("");
     const [password , setPassword] = useState('');
     const [nickname , setNickname] = useState('');
 
@@ -31,7 +36,7 @@ const SignUp = () => {
         setTermError(false);
     },[])
     const onChangeId = useCallback((e)=>{
-        setId(e.target.value);
+        setEmail(e.target.value);
     },[])
     const onChangeNickname = useCallback((e)=>{
         setNickname(e.target.value);
@@ -47,8 +52,12 @@ const SignUp = () => {
             if(!term){
                 return setTermError(true);
             }
-            console.log(id , nickname , password);
-        },[password , passwordCheck , term]
+            dispatch({
+                type: SIGN_UP_REQUEST,
+                data: {email , password , nickname}
+            })
+            console.log(email , nickname , password);
+        },[password , passwordCheck , term , email]
     );
     return (
         <AppLayout>
@@ -57,9 +66,9 @@ const SignUp = () => {
             </Head>
             <Form onFinish={onSubmit} style={{padding:10}}>
                 <div>
-                    <label htmlFor={"user-id"}>아이디</label>
+                    <label htmlFor={"user-id"}>이메일</label>
                     <br/>
-                    <Input name={"user-id"} value={id} required onChange={onChangeId}/>
+                    <Input name={"user-id"} value={email} type={"email"} required onChange={onChangeId}/>
                 </div>
 
                 <div>
@@ -80,16 +89,16 @@ const SignUp = () => {
                            required
                            onChange={onChangePasswordCheck}
                     />
-                    {passwordError && <ErrorMesaage style={{color:'red'}}>비밀번호 불일치.</ErrorMesaage>}
+                    {passwordError && <ErrorMessage style={{color:'red'}}>비밀번호 불일치.</ErrorMessage>}
                 </div>
                 <div>
                 <Checkbox name={"user-term"} checked={term} onChange={onChangeTerm}>
                     약관에 동의합니다.
                 </Checkbox>
-                {termError && <ErrorMesaage style={{color:'red'}}>동의해야 합니다.</ErrorMesaage>}
+                {termError && <ErrorMessage style={{color:'red'}}>동의해야 합니다.</ErrorMessage>}
                 </div>
                 <div style={{marginTop:10}}>
-                    <Button type={"primary"} htmlType={"submit"}>가입하기</Button>
+                    <Button type={"primary"} htmlType={"submit"} loading={signUpLoading}>가입하기</Button>
                 </div>
             </Form>
         </AppLayout>

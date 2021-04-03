@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types'
 
 import Slick from 'react-slick'
-import {Overlay, clsButton, Global , Header , SlickWrapper , ImageWrapper} from './styles'
+import {Overlay, CloseBtn, Global , Header , SlickWrapper , ImageWrapper} from './styles'
 /*케루셀 리엑트 슬릭
 * 넘겨서 보기*/
 
@@ -12,8 +12,8 @@ const ImagesZoom = ({images,onClose}) => {
         <Overlay>
             <Global/>
             <Header>
-                <h1>상세 이미지</h1>
-                <clsButton onClick={onClose}>X</clsButton>
+                <h1 style={{marginBottom : '-0.5em'}}>상세 이미지</h1>
+                <CloseBtn onClick={onClose}/>
             </Header>
             <SlickWrapper>
                 <div>

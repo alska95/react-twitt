@@ -1,5 +1,5 @@
 import styled, {createGlobalStyle} from "styled-components";
-import {Button} from "antd";
+import { CloseOutlined } from '@ant-design/icons';
 
 export const Overlay = styled.div`
   position:fixed;
@@ -23,15 +23,15 @@ export const Header = styled.header`
 
 `;
 
-export const clsButton = styled.button`
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 5px;
-    line-height: 14px;
-    font-size: 20px;
-    cursor: pointer;
-`
+export const CloseBtn = styled(CloseOutlined)`
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 15px;
+  line-height: 14px;
+  cursor: pointer;
+`;
+
 /*슬릭에 스타일 덮어쓰기*/
 export const Global = createGlobalStyle`
   .slick-slide{
