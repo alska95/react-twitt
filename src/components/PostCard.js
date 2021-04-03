@@ -65,7 +65,7 @@ const PostCard = ({post}) => {
                 <div>
                     <CommentForm post = {post}/>
                     <List
-                        header={`${post.Comments.length} 댓글`}
+                        header={`${post.mainPosts.Comments.length} 댓글`}
                         itemLayout={"horizontal"}
                         dataSource={post.Comments}
                         renderItem={(item)=>(
