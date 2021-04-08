@@ -7,7 +7,7 @@ import {ADD_COMMENT_REQUEST, ADD_POST_REQUEST} from "../reducers/post";
 
 /*리덕스 ,리엑트 폼 참고*/
 const CommentForm = ({post}) => {
-    const addCommentDone = useSelector((state)=>{state.post.comment.addCommentDone});
+    const addCommentDone = useSelector((state)=> state.post.addCommentDone);
     const dispatch = useDispatch();
     const id = useSelector((state)=>state.user.me?.user);/*로그인 안한경우 고려*/
 
