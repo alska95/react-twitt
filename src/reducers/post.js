@@ -1,4 +1,5 @@
 import shortId from 'shortid';
+import produce from "immer";
 
 /*더미데이터 생성
 * 1.shortId : 겹치기 힘든 아이디를 생성해준다.
@@ -99,88 +100,80 @@ const dummyComment = (data) =>({
     },
 });
 
+//이전 상태를 액션을 통해 다음상태를 만들어내는 함수가 리듀서다. 불변성을 지키면서.
+//-->produce를 사용하면 불변성이 보장된다.
 const reducer = (state = initialState , action) =>{
-    switch (action.type){
-        case ADD_POST_REQUEST:
-            return{
-                ...state,
-                addPostDone: false,
-                addPostError: false,
-                addPostLoading: true,
-            };
-        case ADD_POST_SUCCESS:
-            return{
-                ...state,
-                mainPosts: [dummyPostAction(action.data), ...state.mainPosts],
-                addPostDone: true,
-                addPostError: false,
-                addPostLoading: false,
-            };
-        case ADD_POST_FAILURE:
-            return{
-                ...state,
-                addPostDone: false,
-                addPostError: action.error,
-                addPostLoading: false,
-            };
+    return produce(state, (draft)=>{
+        switch (action.type) {
+            case ADD_POST_REQUEST:
+                draft.addPostLoading = false;
+                draft.addPostDone = false;
+                draft.addPostError = null;
+                break;
 
-        case REMOVE_POST_REQUEST:
-            return{
-                ...state,
-                removePostDone: false,
-                removePostError: false,
-                removePostLoading: true,
-            };
-        case REMOVE_POST_SUCCESS:
-            return{
-                ...state,
-                mainPosts: state.mainPosts.filter((v)=>v.id !== action.data),
-                removePostDone: true,
-                removePostError: false,
-                removePostLoading: false,
-            };
-        case REMOVE_POST_FAILURE:
-            return{
-                ...state,
-                removePostDone: false,
-                removePostError: action.error,
-                removePostLoading: false,
-            };
-        case ADD_COMMENT_REQUEST:
-            return{
-                ...state,
-                addCommentDone: false,
-                addCommentLoading: true,
-            };
-        case ADD_COMMENT_SUCCESS:{
-            /*action.data.comment , userid , postid*/
-            /*immer 사용하면 훨씬 쉽게 할 수 있다. */
-            const postIndex = state.mainPosts.findIndex((y)=>
-                y.id === action.data.postId);
-            const post = state.mainPosts[postIndex];
-            post.Comments = [dummyComment(action.data.content) , ...post.Comments]; /*배열의 앞으로 새로운 댓글을 집어넣는다.*/
-            const mainPosts = [...state.mainPosts];
-            mainPosts[postIndex] = post;
+            case ADD_POST_SUCCESS:
+                draft.addPostLoading = true;
+                draft.addPostDone = false;
+                draft.mainPosts.unshift([dummyPostAction(action.data), ...state.mainPosts]);
+                break;
+            case ADD_POST_FAILURE:
+                draft.addPostLoading = false;
+                draft.addPostDone = action.error;
+                draft.addPostError = false;
+            case REMOVE_POST_REQUEST:
+                draft.removePostLoading = false;
+                draft.removePostDone = false;
+                draft.removePostError = true;
+                break;
+            case REMOVE_POST_SUCCESS:
+                draft.removePostLoading = draft.mainPosts.filter((v) => v.id !== action.data);
+                draft.removePostDone = false;
+                draft.removePostError = false;
+                break;
 
-            return{
-                ...state,
-                addCommentDone: true,
-                addCommentLoading: false,
-            };
-        }
+            case REMOVE_POST_FAILURE:
+                draft.removePostLoading = false;
+                draft.removePostDone = action.error;
+                draft.removePostError = true;
+                break;
 
-        case ADD_COMMENT_FAILURE:
-            return{
-                addCommentDone: false,
-                addCommentError: action.error,
-                addCommentLoading: false,
+            case ADD_COMMENT_REQUEST:
+                draft.addCommentDone = false;
+                draft.addCommentLoading = true;
+                break;
+
+            case ADD_COMMENT_SUCCESS: {
+                /*action.data.comment , userid , postid*/
+                /*immer 사용하면 훨씬 쉽게 할 수 있다. */
+                /*                const postIndex = state.mainPosts.findIndex((y)=>
+                                    y.id === action.data.postId);
+                                const post = state.mainPosts[postIndex];
+                                post.Comments = [dummyComment(action.data.content) , ...post.Comments]; /!*배열의 앞으로 새로운 댓글을 집어넣는다.*!/
+                                const mainPosts = [...state.mainPosts];
+                                mainPosts[postIndex] = post;
+
+                                return{
+                                    ...state,
+                                    addCommentDone: true,
+                                    addCommentLoading: false,
+                                };*/
+                const post = draft.mainPosts.findIndex((v) => v.id === action.data.postId);
+                post.Comment.unshift(dummyComment(action.data.content));
+                draft.addCommentLoading = false;
+                draft.addCommentDone = true;
+                break;
             }
 
-        default:
-            return {
-                ...state,
-            };
-    }
+            case ADD_COMMENT_FAILURE:
+                draft.addCommentDone = false;
+                draft.addCommentError = action.error;
+                draft.addCommentLoading = false;
+                break;
+
+            default:
+                break;
+        }
+    });
 }
 
 export default reducer

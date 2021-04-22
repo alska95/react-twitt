@@ -1,16 +1,14 @@
 import {ADD_POST_TO_ME, REMOVE_POST_OF_ME} from "./post";
+import produce from "immer";
 
 export const initialState = {
     isLoggedIn: false,
     isLoggingIn:false,
     isLoggingOut: false, /*로그아웃 시도중*/
 
-    user: [{
-        Posts: [null , ],
-        Followings:0,
-        Followers:0,
-        }
-    ],
+    user: {
+        Posts : [{id:1}],
+    },
     isSigningUp:false,
     isSignedIn:false,
 
@@ -119,118 +117,93 @@ const dummyUser = (data) => ({
 });
 
 const reducer = (state = initialState , action) =>{
-    switch (action.type) {
-        case LOG_IN_REQUEST:{
-            return{
-                ...state,
-                isLoggingIn: true,
-                user:action.data,
-            };
-        }
-        case LOG_IN_SUCCESS:{
-            console.log("redux Login");
-            return{
-                ...state,
-                isLoggingIn: false,
-                isLoggedIn: true,
-                user: dummyUser(action.data),
+    return produce(state , (draft)=>{
+        switch (action.type) {
+            case LOG_IN_REQUEST:{
+                draft.isLoggedIn = true;
+                break;
             }
-        }
-        case LOG_IN_FAILURE:{
-            return{
-                ...state,
-                isLoggedIn: false,
-                isLoggingIn: false,
+            case LOG_IN_SUCCESS:{
+
+                draft.isLoggedIn= true;
+                draft.isLoggingIn = false;
+                draft.user = dummyUser(action.data);
+                break;
             }
-        }
-        case LOG_OUT_SUCCESS:{
-            return{
-                ...state,
-                isLoggedIn: false,
-                isLoggingOut: false,
+            case LOG_IN_FAILURE:{
+                draft.isLoggedIn= false;
+                draft.isLoggingIn = false;
+                break;
             }
-        }
-        case LOG_OUT_FAILURE:{
-            return{
-                ...state,
-                isLoggedIn: false,
-                isLoggingOut: false,
-            }
-        }
-        case LOG_OUT_REQUEST:{
-            return{
-                ...state,
-                isLoggingOut: true,
-                user:action.data,
-            }
-        }
-        case SIGN_UP_REQUEST:{
-            return{
-                ...state,
-                isSigningUp: true,
-                isSignedIn: false,
-            }
-        }
-        case SIGN_UP_SUCCESS:{
-            return{
-                ...state,
-                isSigningUp: false,
-                isSignedIn: false,
-                signUpData : action.data,
-            }
-        }
-        case SIGN_UP_FAILURE:{
-            return{
-                ...state,
-                isSigningUp: false,
-                isSignedIn: false,
-            }
-        }
-        case CHANGE_NICKNAME_REQUEST:{
-            return{
-                ...state,
-                changeNicknameLoading: true,
-                changeNicknameDone: false,
-                changeNicknameError: false,
-            }
-        }
-        case CHANGE_NICKNAME_FAILURE:{
-            return{
-                ...state,
-                changeNicknameLoading: false,
-                changeNicknameDone: true,
-                changeNicknameError: false,
+            case LOG_OUT_SUCCESS:{
+                draft.isLoggedIn= false;
+                draft.isLoggingOut = false;
+                break;
 
             }
-        }
-        case CHANGE_NICKNAME_SUCCESS:{
-            return{
-                ...state,
-                changeNicknameLoading: false,
-                changeNicknameDone: false,
-                changeNicknameError: true,
-            }
-        }
-        case ADD_POST_TO_ME:
-            return{
-                ...state,
-                user: {
-                    ...state.user,
-                    Posts: [{id:action.data}, ...state.user.Posts],
-                }
-            }
-        case REMOVE_POST_OF_ME:
-            return{
-                ...state,
-                user: {
-                    ...state.user,
-                    Posts: state.user.Posts.filter((v)=>v.id === action.data),
-                }
-            }
+            case LOG_OUT_FAILURE:{
+                draft.isLoggedIn= false;
+                draft.isLoggingOut = false;
+                break;
 
-        default:
-            return state;
-    }
+            }
+            case LOG_OUT_REQUEST:{
+                draft.isLoggingOut = true;
+                draft.user = action.data;
+                break;
+
+            }
+            case SIGN_UP_REQUEST:
+                draft.isSignedIn = false;
+                draft.isSigningUp = true;
+                break;
+            case SIGN_UP_SUCCESS:
+                draft.signUpLoading = false;
+                draft.signUpDone = true;
+                break;
+            case SIGN_UP_FAILURE:
+                draft.signUpLoading = false;
+                draft.signUpError = action.error;
+                break;
+            case CHANGE_NICKNAME_REQUEST:
+                draft.changeNicknameLoading = true;
+                draft.changeNicknameError = null;
+                draft.changeNicknameDone = false;
+                break;
+            case CHANGE_NICKNAME_SUCCESS:
+                draft.changeNicknameLoading = false;
+                draft.changeNicknameDone = true;
+                break;
+            case CHANGE_NICKNAME_FAILURE:
+                draft.changeNicknameLoading = false;
+                draft.changeNicknameError = action.error;
+                break;
+            case ADD_POST_TO_ME:
+                draft.user.Posts.unshift({id : action.data});
+                break;
+/*                return{
+                    ...state,
+                    user: {
+                        ...state.user,
+                        Posts: [{id:action.data}, ...state.user.Posts],
+                    }
+                }*/
+            case REMOVE_POST_OF_ME:
+                draft.user.Posts = draft.user.Posts.filter((v)=> v.id !== action.data);
+                break;
+/*                return{
+                    ...state,
+                    user: {
+                        ...state.user,
+                        Posts: state.user.Posts.filter((v)=>v.id === action.data),
+                    }
+                }*/
+
+            default:
+                break;
+        }
+    })
+
 }
 
 export default reducer;

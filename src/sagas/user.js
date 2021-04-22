@@ -26,7 +26,7 @@ function* LogIn(action){/*로그인 리퀘스트할때 매개변수로 전달된
         /*const result = yield call(logInAPI , action.data) /!*===loginApi(action.data)*!/*/
         yield put({
             type: LOG_IN_SUCCESS,
-            data : action.data
+            data : action.data,
         })
     }catch(err){
         yield put({
