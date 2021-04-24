@@ -1,42 +1,50 @@
 import shortId from 'shortid';
 import produce from "immer";
+import faker from "faker"
 
 /*더미데이터 생성
 * 1.shortId : 겹치기 힘든 아이디를 생성해준다.
 * 2.faker : 각종 더미데이터 제공*/
 
 export const initialState = {
-    mainPosts : [{
-        id:1,
-        User:{
-            id:1,
-            nickname:'황경하',
-        },
-        content:'첫 번재 게시글 #해시 #리엑트',
-        Images:[{ //시퀄라이즈 시 대문자로 반환되기에 대문자로 (조인연산인듯?)
-            id: shortId.generate(),
-            src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTAyMTZfNTkg%2FMDAxNjEzNDUzMDkzODQx.7efhBANV9v18I0DUQhH-Tc27xuI5uYSc0E6GYhoGJNEg.FKljN_JtNtpnt6jLFmXp9xXAdatehRbeMnQbxN54To4g.PNG.kcm2874%2F%25C1%25A6%25B8%25F1%25C0%25BB_%25C0%25D4%25B7%25C2%25C7%25D8%25C1%25D6%25BC%25BC%25BF%25E4._001_%2528100%2529.png&type=sc960_832',
-        }, {
-            id: shortId.generate(),
-            src: 'https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726',
-        }, {
-            id: shortId.generate(),
-            src:"../images/그림1.png",
-        }],
-        Comments: [{
-            id: shortId.generate(),
-            User:{
-                id: shortId.generate(),
-                nickname:'he',
-            },
-            content : "aaaa",
-
-        }],
-    }],
+    mainPosts : [
+    //     {
+    //     id:1,
+    //     User:{
+    //         id:1,
+    //         nickname:'황경하',
+    //     },
+    //     content:'첫 번재 게시글 #해시 #리엑트',
+    //     Images:[{ //시퀄라이즈 시 대문자로 반환되기에 대문자로 (조인연산인듯?)
+    //         id: shortId.generate(),
+    //         src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTAyMTZfNTkg%2FMDAxNjEzNDUzMDkzODQx.7efhBANV9v18I0DUQhH-Tc27xuI5uYSc0E6GYhoGJNEg.FKljN_JtNtpnt6jLFmXp9xXAdatehRbeMnQbxN54To4g.PNG.kcm2874%2F%25C1%25A6%25B8%25F1%25C0%25BB_%25C0%25D4%25B7%25C2%25C7%25D8%25C1%25D6%25BC%25BC%25BF%25E4._001_%2528100%2529.png&type=sc960_832',
+    //     }, {
+    //         id: shortId.generate(),
+    //         src: 'https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726',
+    //     }, {
+    //         id: shortId.generate(),
+    //         src:"../images/그림1.png",
+    //     }],
+    //     Comments: [{
+    //         id: shortId.generate(),
+    //         User:{
+    //             id: shortId.generate(),
+    //             nickname:'he',
+    //         },
+    //         content : "aaaa",
+    //
+    //     }],
+    // }
+    ],
     imagePaths:[],//이미지 업로드시에 이미지 저장
+    hasMorePost:true,
     addPostLoading : false,
     addPostDone : false,
     addPostError : false,
+
+    loadPostLoading : false,
+    loadPostDone : false,
+    loadPostError : false,
 
     removePostLoading : false,
     removePostDone : false,
@@ -47,6 +55,30 @@ export const initialState = {
     addCommentError : false,
 
 };
+
+export const generateDummyPost = (number) =>     Array(number).fill().map(()=>({
+    id: shortId.generate(),
+    User:{
+        id : shortId.generate(),
+        nickname : faker.name.findName()
+    },
+    Images : [{
+        src: faker.image.imageUrl(),
+    }],
+    Comments: [{
+        User: {
+            id: shortId.generate(),
+            nickname: faker.name.findName(),
+        },
+        content: faker.lorem.sentence(),
+    }],
+    content : faker.lorem.sentence(),
+}));
+
+export const LOAD_POST_REQUEST = 'LOAD_POST_REQUEST';
+export const LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS';
+export const LOAD_POST_FAILURE = 'LOAD_POST_FAILURE';
+
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
 export const ADD_POST_FAILURE = 'ADD_POST_FAILURE';
@@ -105,6 +137,26 @@ const dummyComment = (data) =>({
 const reducer = (state = initialState , action) =>{
     return produce(state, (draft)=>{
         switch (action.type) {
+
+            case LOAD_POST_REQUEST:
+                draft.loadPostLoading = false;
+                draft.loadPostDone = false;
+                draft.loadPostError = null;
+                break;
+
+            case LOAD_POST_SUCCESS:
+                draft.loadPostLoading = true;
+                draft.loadPostDone = false;
+                draft.mainPosts = action.data.concat(draft.mainPosts);
+                draft.hasMorePost = draft.mainPosts.length < 30;
+                //게시물 50개만 보겠다
+                break;
+            case LOAD_POST_FAILURE:
+                draft.loadPostLoading = false;
+                draft.loadPostDone = action.error;
+                draft.loadPostError = false;
+                break;
+
             case ADD_POST_REQUEST:
                 draft.addPostLoading = false;
                 draft.addPostDone = false;
