@@ -4,7 +4,7 @@ import Head from "next/head"
 import  {Form,Input , Checkbox , Button} from 'antd'
 import styled from 'styled-components'
 import {useDispatch, useSelector} from "react-redux";
-import {SIGN_UP_REQUEST} from "../reducers/user";
+import {SIGN_UP_REQUEST, signupRequestAction} from "../reducers/user";
 
 const ErrorMessage = styled.div`
 
@@ -14,7 +14,7 @@ const ErrorMessage = styled.div`
 
 const SignUp = () => {
     const dispatch = useDispatch();
-    const signUpLoading = useSelector((state)=>state.user.signUpData)
+    const signUpLoading = useSelector((state)=>state.user.signUpLoading)
 
     const [email , setEmail] = useState("");
     const [password , setPassword] = useState('');
@@ -52,10 +52,11 @@ const SignUp = () => {
             if(!term){
                 return setTermError(true);
             }
-            dispatch({
-                type: SIGN_UP_REQUEST,
-                data: {email , password , nickname}
-            })
+            dispatch(
+                signupRequestAction({
+                    email, nickname , password,
+                })
+            )
             console.log(email , nickname , password);
         },[password , passwordCheck , term , email]
     );

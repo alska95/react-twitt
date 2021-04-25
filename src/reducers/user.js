@@ -107,6 +107,10 @@ export const loginRequestAction= (data) =>({
     data,
 })
 
+export const signupRequestAction = (data)=>({
+    type:SIGN_UP_REQUEST,
+    data,
+})
 const dummyUser = (data) => ({
     ...data,
     nickname : '황경하',
@@ -120,7 +124,8 @@ const reducer = (state = initialState , action) =>{
     return produce(state , (draft)=>{
         switch (action.type) {
             case LOG_IN_REQUEST:{
-                draft.isLoggedIn = true;
+                draft.isLoggingIn = true;
+                draft.isLoggedIn = false;
                 draft.user = dummyUser(action.data);
                 break;
             }
@@ -149,6 +154,7 @@ const reducer = (state = initialState , action) =>{
 
             }
             case LOG_OUT_REQUEST:{
+                draft.isLoggedIn = false;
                 draft.isLoggingOut = true;
                 draft.user = action.data;
                 break;
@@ -159,10 +165,12 @@ const reducer = (state = initialState , action) =>{
                 draft.isSigningUp = true;
                 break;
             case SIGN_UP_SUCCESS:
+                draft.isSigningUp = false;
                 draft.signUpLoading = false;
                 draft.signUpDone = true;
                 break;
             case SIGN_UP_FAILURE:
+                draft.isSigningUp = false;
                 draft.signUpLoading = false;
                 draft.signUpError = action.error;
                 break;
