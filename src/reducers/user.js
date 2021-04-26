@@ -123,6 +123,39 @@ const dummyUser = (data) => ({
 const reducer = (state = initialState , action) =>{
     return produce(state , (draft)=>{
         switch (action.type) {
+            case UNFOLLOW_REQUEST:{
+                draft.unfollowLoading = true;
+                draft.unfollowDone = false;
+                break;
+            }
+            case UNFOLLOW_SUCCESS:{
+                draft.unfollowDone = true;
+                draft.unfollowLoading = false;
+                draft.user.Followings = draft.user.Followings.filter((v)=> v.id !== action.data);
+                //해당 사람빼고 나머지 팔로우 해준다.
+                break;
+            }
+            case UNFOLLOW_FAILURE:{
+                draft.unfollowDone = false;
+                draft.unfollowLoading = false;
+                break;
+            }
+            case FOLLOW_REQUEST:{
+                draft.followLoading = true;
+                draft.followDone = false;
+                break;
+            }
+            case FOLLOW_SUCCESS:{
+                draft.followDone = true;
+                draft.followLoading = false;
+                draft.user.Followings.push({id:action.data});
+                break;
+            }
+            case FOLLOW_FAILURE:{
+                draft.followDone = false;
+                draft.followLoading = false;
+                break;
+            }
             case LOG_IN_REQUEST:{
                 draft.isLoggingIn = true;
                 draft.isLoggedIn = false;

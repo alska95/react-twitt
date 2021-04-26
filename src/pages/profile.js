@@ -12,7 +12,7 @@ const Profile = () => {
     const me = useSelector((state)=>(state.user.user));
 
     useEffect(()=>{
-        if(me && me.id){
+        if(!(me && me.id)){
             Router.push('/');
         }
     },[me && me.id]);

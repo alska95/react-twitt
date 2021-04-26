@@ -1,8 +1,22 @@
 import {all, fork} from "@redux-saga/core/effects";
 import {delay, put, takeLatest} from "redux-saga/effects";
-import {LOG_IN_SUCCESS , LOG_IN_FAILURE , LOG_IN_REQUEST
-, LOG_OUT_FAILURE , LOG_OUT_REQUEST ,LOG_OUT_SUCCESS ,
-SIGN_UP_FAILURE , SIGN_UP_REQUEST , SIGN_UP_SUCCESS} from "../reducers/user";
+import {
+    LOG_IN_SUCCESS,
+    LOG_IN_FAILURE,
+    LOG_IN_REQUEST
+    ,
+    LOG_OUT_FAILURE,
+    LOG_OUT_REQUEST,
+    LOG_OUT_SUCCESS,
+    SIGN_UP_FAILURE,
+    SIGN_UP_REQUEST,
+    SIGN_UP_SUCCESS,
+    UNFOLLOW_REQUEST,
+    FOLLOW_REQUEST,
+    FOLLOW_SUCCESS,
+    FOLLOW_FAILURE,
+    UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE
+} from "../reducers/user";
 
 function* SignUp(action){
     try{
@@ -51,6 +65,36 @@ function* LogOut(action){
         })
     }
 }
+
+function* Follow(action){
+    try{
+        yield delay(1000)
+        yield put({
+            type:FOLLOW_SUCCESS,
+            data : action.data
+        })
+    }catch (err){
+        yield put({
+            type:FOLLOW_FAILURE,
+            data : action.data
+        })
+    }
+}
+
+function* UnFollow(action){
+    try{
+        yield delay(1000)
+        yield put({
+            type:UNFOLLOW_SUCCESS,
+            data : action.data
+        })
+    }catch (err){
+        yield put({
+            type:UNFOLLOW_FAILURE,
+            data : action.data
+        })
+    }
+}
 /*put은 dispatch 역할
 * fork 는 비동기 함수호출 ( 결과 안기다리고 바로 다음꺼 실행)
 * call 은 동기 함수호출*/
@@ -66,9 +110,17 @@ function* watchLogout(){
 function* watchSignup(){
     yield takeLatest(SIGN_UP_REQUEST, SignUp);
 }
+function* watchFollow(){
+    yield takeLatest(FOLLOW_REQUEST, Follow);
+}
+function* watchUnFollow(){
+    yield takeLatest(UNFOLLOW_REQUEST, UnFollow);
+}
 
 export default function* userSaga(){
     yield all([
+        fork(watchFollow),
+        fork(watchUnFollow),
         fork(watchLogin),
         fork(watchLogout),
         fork(watchSignup),
