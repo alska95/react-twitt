@@ -49,8 +49,8 @@ export const LOG_OUT_FAILURE = 'LOG_OUT_FAILURE';
 export const LOG_OUT_REQUEST = 'LOG_OUT_REQUEST';
 
 export const SIGN_UP_REQUEST = 'SIGN_UP_REQUEST';
-export const SIGN_UP_SUCCESS = 'SIGN_UP_REQUEST';
-export const SIGN_UP_FAILURE = 'SIGN_UP_REQUEST';
+export const SIGN_UP_SUCCESS = 'SIGN_UP_SUCCESS';
+export const SIGN_UP_FAILURE = 'SIGN_UP_FAILURE';
 
 export const CHANGE_NICKNAME_REQUEST = 'CHANGE_NICKNAME_REQUEST';
 export const CHANGE_NICKNAME_SUCCESS = 'CHANGE_NICKNAME_REQUEST';
@@ -107,10 +107,7 @@ export const loginRequestAction= (data) =>({
     data,
 })
 
-export const signupRequestAction = (data)=>({
-    type:SIGN_UP_REQUEST,
-    data,
-})
+
 const dummyUser = (data) => ({
     ...data,
     nickname : '황경하',
@@ -194,16 +191,15 @@ const reducer = (state = initialState , action) =>{
 
             }
             case SIGN_UP_REQUEST:
-                draft.isSignedIn = false;
-                draft.isSigningUp = true;
+                draft.signUpLoading = true;
+                draft.signUpError = null;
+                draft.signUpDone = false;
                 break;
             case SIGN_UP_SUCCESS:
-                draft.isSigningUp = false;
                 draft.signUpLoading = false;
                 draft.signUpDone = true;
                 break;
             case SIGN_UP_FAILURE:
-                draft.isSigningUp = false;
                 draft.signUpLoading = false;
                 draft.signUpError = action.error;
                 break;

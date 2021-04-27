@@ -1,10 +1,11 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import AppLayout from "../components/AppLayout";
 import Head from "next/head"
 import  {Form,Input , Checkbox , Button} from 'antd'
 import styled from 'styled-components'
 import {useDispatch, useSelector} from "react-redux";
-import {SIGN_UP_REQUEST, signupRequestAction} from "../reducers/user";
+import {SIGN_UP_REQUEST} from "../reducers/user";
+import Router from "next/router";
 
 const ErrorMessage = styled.div`
 
@@ -45,6 +46,7 @@ const SignUp = () => {
         setPassword(e.target.value);
     },[])
 
+
     const onSubmit = useCallback(()=>{
             if(password!=passwordCheck){
                 return setPasswordError(true);
@@ -52,14 +54,15 @@ const SignUp = () => {
             if(!term){
                 return setTermError(true);
             }
-            dispatch(
-                signupRequestAction({
-                    email, nickname , password,
-                })
+            return dispatch({
+                    type : SIGN_UP_REQUEST,
+                    data : {
+                        email, password
+                    }
+                }
             )
-            console.log(email , nickname , password);
-        },[password , passwordCheck , term , email]
-    );
+        },[password , passwordCheck , term , email]);
+
     return (
         <AppLayout>
             <Head>

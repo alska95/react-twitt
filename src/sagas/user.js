@@ -18,18 +18,19 @@ import {
     UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE
 } from "../reducers/user";
 
-function* SignUp(action){
-    try{
+function* SignUp() {
+    try {
+        // const result = yield call(signUpAPI);
         yield delay(1000);
         yield put({
-            type:SIGN_UP_SUCCESS,
-            data: action.data,
-        })
-    }catch (err){
+            type: SIGN_UP_SUCCESS,
+        });
+    } catch (err) {
+        console.error(err);
         yield put({
-            type:SIGN_UP_FAILURE,
-            data:action.data,
-        })
+            type: SIGN_UP_FAILURE,
+            error: err.response.data,
+        });
     }
 }
 
