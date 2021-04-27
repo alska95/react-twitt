@@ -18,7 +18,7 @@ module.exports = (sequelize , DataTypes) =>{
         collate : 'utf8_general_ci',
     });
     User.associate = (db)=>{
-        db.User.hasMany(db.post); //post 1 : N User
+        db.User.hasMany(db.Post); //post 1 : N User
         db.User.hasMany(db.Comment); //Comment 1 : N User
         db.User.belongsToMany(db.Hashtag , {through : 'Like' , as:'Liked'});//중간테이블
         db.User.belongsToMany(db.User , {through : 'Follow' , as: 'Followers' , foreignKey: 'followingId' });

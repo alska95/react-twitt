@@ -13,7 +13,7 @@ module.exports = (sequelize , DataTypes) =>{
         db.Post.hasMany(db.Comment); //post N : 1 comment
         db.Post.hasMany(db.Image);
         db.Post.belongsTo(db.Post , {as : 'Retweet'});//리트윗 --> postId -> Retweet
-        db.Post.belongsToMany(db.Hashtag);
+        db.Post.belongsToMany(db.Hashtag, {through:'PostHashtag'});
         db.Post.belongsToMany(db.User, {through: 'Like' , as:'Likers'}); //중간테이블 설정 //포스트 좋아요 누른 사람
     };
     return Post;
