@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Form , Input , Button} from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -17,12 +17,18 @@ const FormWrapper = styled(Form)`
 const LoginForm = () => {
     const dispatch = useDispatch();
     const isLoggingIn = useSelector((state) => state.user.isLoggingIn);
-
+    const logInError = useSelector((state)=> state.user.logInError);
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
 /*    const [passwordCheck,setPasswordCheck] = useState("");*/
 
     /*컴포넌트로 전달하는 함수 최적화를 위해 유즈콜백*/
+
+    useEffect(()=>{
+        if(logInError){
+            alert(logInError);
+        }
+    },[logInError]);
     const onChangeEmail = useCallback((e)=>{
         setEmail(e.target.value)
         console.log(email);

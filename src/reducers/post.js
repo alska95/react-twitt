@@ -8,23 +8,23 @@ import faker from "faker"
 
 export const initialState = {
     mainPosts : [
-    //     {
-    //     id:1,
-    //     User:{
-    //         id:1,
-    //         nickname:'황경하',
-    //     },
-    //     content:'첫 번재 게시글 #해시 #리엑트',
-    //     Images:[{ //시퀄라이즈 시 대문자로 반환되기에 대문자로 (조인연산인듯?)
-    //         id: shortId.generate(),
-    //         src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTAyMTZfNTkg%2FMDAxNjEzNDUzMDkzODQx.7efhBANV9v18I0DUQhH-Tc27xuI5uYSc0E6GYhoGJNEg.FKljN_JtNtpnt6jLFmXp9xXAdatehRbeMnQbxN54To4g.PNG.kcm2874%2F%25C1%25A6%25B8%25F1%25C0%25BB_%25C0%25D4%25B7%25C2%25C7%25D8%25C1%25D6%25BC%25BC%25BF%25E4._001_%2528100%2529.png&type=sc960_832',
-    //     }, {
-    //         id: shortId.generate(),
-    //         src: 'https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726',
-    //     }, {
-    //         id: shortId.generate(),
-    //         src:"../images/그림1.png",
-    //     }],
+/*         {
+         id:1,
+         User:{
+             id:1,
+             nickname:'황경하',
+         },
+         content:'첫 번재 게시글 #해시 #리엑트',
+        Images:[{ //시퀄라이즈 시 대문자로 반환되기에 대문자로 (조인연산인듯?)
+             id: shortId.generate(),
+             src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTAyMTZfNTkg%2FMDAxNjEzNDUzMDkzODQx.7efhBANV9v18I0DUQhH-Tc27xuI5uYSc0E6GYhoGJNEg.FKljN_JtNtpnt6jLFmXp9xXAdatehRbeMnQbxN54To4g.PNG.kcm2874%2F%25C1%25A6%25B8%25F1%25C0%25BB_%25C0%25D4%25B7%25C2%25C7%25D8%25C1%25D6%25BC%25BC%25BF%25E4._001_%2528100%2529.png&type=sc960_832',
+         }, {
+             id: shortId.generate(),
+             src: 'https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726',
+         }, {
+             id: shortId.generate(),
+             src:"../images/그림1.png",
+         }],
     //     Comments: [{
     //         id: shortId.generate(),
     //         User:{
@@ -34,7 +34,7 @@ export const initialState = {
     //         content : "aaaa",
     //
     //     }],
-    // }
+     }*/
     ],
     imagePaths:[],//이미지 업로드시에 이미지 저장
     hasMorePost:true,
@@ -100,16 +100,14 @@ export const addPostRequestAction = (data) =>({
 })
 
 export const addCommentRequestAction = (data) =>({
-    type: ADD_POST_REQUEST,
-    data
+    type: ADD_COMMENT_REQUEST,
+    data,
 })
 
 const dummyPostAction = (data) =>({
     id: data.id,
     content:data.content,
-    Images : [{
-        src:"https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTAyMTZfNTkg%2FMDAxNjEzNDUzMDkzODQx.7efhBANV9v18I0DUQhH-Tc27xuI5uYSc0E6GYhoGJNEg.FKljN_JtNtpnt6jLFmXp9xXAdatehRbeMnQbxN54To4g.PNG.kcm2874%2F%25C1%25A6%25B8%25F1%25C0%25BB_%25C0%25D4%25B7%25C2%25C7%25D8%25C1%25D6%25BC%25BC%25BF%25E4._001_%2528100%2529.png&type=sc960_832",
-    },
+    Images : [
     ],
     User:{
         id:1,
@@ -166,12 +164,13 @@ const reducer = (state = initialState , action) =>{
             case ADD_POST_SUCCESS:
                 draft.addPostLoading = true;
                 draft.addPostDone = false;
-                draft.mainPosts.unshift([dummyPostAction(action.data), ...state.mainPosts]);
+                draft.mainPosts.unshift(action.data);
                 break;
             case ADD_POST_FAILURE:
                 draft.addPostLoading = false;
                 draft.addPostDone = action.error;
                 draft.addPostError = false;
+                break;
             case REMOVE_POST_REQUEST:
                 draft.removePostLoading = false;
                 draft.removePostDone = false;
@@ -209,15 +208,17 @@ const reducer = (state = initialState , action) =>{
                                     addCommentDone: true,
                                     addCommentLoading: false,
                                 };*/
-                const post = draft.mainPosts.findIndex((v) => v.id === action.data.postId);
-                post.Comment.unshift(dummyComment(action.data.content));
+                const post = draft.mainPosts.find((v) => v.id === action.data.postId);
+                post.Comment.unshift(action.data);
                 draft.addCommentLoading = false;
                 draft.addCommentDone = true;
                 break;
             }
 
+
+
             case ADD_COMMENT_FAILURE:
-                draft.addCommentDone = false;
+                draft.addCommentDone = true;
                 draft.addCommentError = action.error;
                 draft.addCommentLoading = false;
                 break;

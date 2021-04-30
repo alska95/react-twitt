@@ -1,5 +1,5 @@
 import {delay, put} from "redux-saga/effects";
-import {all, fork, takeLatest} from "@redux-saga/core/effects";
+import {all, call, fork, takeLatest} from "@redux-saga/core/effects";
 import {
     ADD_COMMENT_SUCCESS,
     ADD_COMMENT_REQUEST,
@@ -16,7 +16,7 @@ import {
     LOAD_POST_FAILURE, LOAD_POST_REQUEST, generateDummyPost,
 } from "../reducers/post";
 import shortId from 'shortid'
-
+import axios from "axios";
 
 function* loadPost(action){
     try{
@@ -35,23 +35,26 @@ function* loadPost(action){
     }
 }
 
-
+function addPostAPI(data){
+    return axios.post('/post', {content :data})
+}
 function* addPost(action){
     try{
 
-        yield delay(1000)
+        const result = yield call(addPostAPI ,action.data);
         /*        const result = yield call(addPostAPI , action.data);*/
-        const id = shortId.generate();
+/*        const id = shortId.generate();*/
         yield put({
             type: ADD_POST_SUCCESS,
-            data: {
+            data: result.data,
+/*            data: {
                 id: id,
-                content: action.data,
-            }, /*엑션에서 리퀘스트 받아와서 석세스를 넘겨줌 , 데이터에는 사용자가 넣은 데이터가 들어있다.*/
+                content: result.data,
+            }, /!*엑션에서 리퀘스트 받아와서 석세스를 넘겨줌 , 데이터에는 사용자가 넣은 데이터가 들어있다.*!/*/
         })
         yield put({
             type:ADD_POST_TO_ME,
-            data:id,
+            data:result.data.id,
         })
     }catch(err){
         yield put({
@@ -80,24 +83,23 @@ function* removePost(action){
         })
     }
 }
+function addCommentAPI(data){
+    return axios.post(`/post/comment` , data); //Post /comment
 
-function* addComment(action){
-    try{
-        yield delay(1000);
+}
+function* addComment(action) {
+    try {
+        const result = yield call(addCommentAPI, action.data);
 
         yield put({
-            type:ADD_COMMENT_SUCCESS,
-            data: {
-                content: action.data,
-            },
+            type: ADD_COMMENT_SUCCESS,
+            data: result.data,
         });
-
-    }catch (err){
-        yield delay(1000);
+    } catch (err) {
         yield put({
-            type:ADD_COMMENT_FAILURE,
-            data: action.data
-        })
+            type: ADD_COMMENT_FAILURE,
+            data: err.response.data,
+        });
     }
 }
 

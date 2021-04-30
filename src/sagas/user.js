@@ -1,4 +1,4 @@
-import {all, fork} from "@redux-saga/core/effects";
+import {all, call, fork} from "@redux-saga/core/effects";
 import {delay, put, takeLatest} from "redux-saga/effects";
 import {
     LOG_IN_SUCCESS,
@@ -15,35 +15,44 @@ import {
     FOLLOW_REQUEST,
     FOLLOW_SUCCESS,
     FOLLOW_FAILURE,
-    UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE
+    UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE, LOAD_USER_REQUEST, LOAD_USER_SUCCESS, LOAD_USER_FAILURE
 } from "../reducers/user";
+import axios from "axios";
 
-function* SignUp() {
+
+function signUpAPI(data){
+    return axios.post('/user' , data);
+}
+function* SignUp(action) {
     try {
         // const result = yield call(signUpAPI);
-        yield delay(1000);
+        const result = yield call(signUpAPI , action.data)
+        console.log('result : ' , result);
         yield put({
             type: SIGN_UP_SUCCESS,
+
         });
     } catch (err) {
-        console.error(err);
+        console.error('err : ' , err);
         yield put({
             type: SIGN_UP_FAILURE,
             error: err.response.data,
         });
     }
 }
-
+function logInAPI(data){
+    return axios.post('/user/login',data)
+}
 function* LogIn(action){/*로그인 리퀘스트할때 매개변수로 전달된다.*/
     try{
-        console.log("saga Login")
-        yield delay(1000)
+        const result = yield call(logInAPI , action.data)
         /*const result = yield call(logInAPI , action.data) /!*===loginApi(action.data)*!/*/
         yield put({
             type: LOG_IN_SUCCESS,
-            data : action.data,
-        })
+            data : result.data,
+        });
     }catch(err){
+        console.error(err);
         yield put({
             type: LOG_IN_FAILURE,
             data: err.response.data,
@@ -51,9 +60,13 @@ function* LogIn(action){/*로그인 리퀘스트할때 매개변수로 전달된
     }
 }
 
+function logOutAPI(data){
+    return axios.post('/user/logout' , data);
+}
 function* LogOut(action){
     try{
-        yield delay(1000)
+        const result = yield call(logOutAPI);
+        console.log(result);
         /*        const result = yield call(logOutAPI)*/
         yield put({/*엑션을 만들어줌. dispatch*/
             type: LOG_OUT_SUCCESS,
@@ -62,6 +75,28 @@ function* LogOut(action){
     }catch(err){
         yield put({
             type: LOG_OUT_FAILURE,
+            data: err.response.data,
+        })
+    }
+}
+
+
+
+function LoadUserAPI(){
+    return axios.post('/user');
+}
+function* LoadUser(action){
+    try{
+        const result = yield call(LoadUserAPI , action.data);
+        console.log(result);
+        /*        const result = yield call(LoadUserAPI)*/
+        yield put({/*엑션을 만들어줌. dispatch*/
+            type: LOAD_USER_SUCCESS,
+            data : result.data
+        })
+    }catch(err){
+        yield put({
+            type: LOAD_USER_FAILURE,
             data: err.response.data,
         })
     }
@@ -117,10 +152,14 @@ function* watchFollow(){
 function* watchUnFollow(){
     yield takeLatest(UNFOLLOW_REQUEST, UnFollow);
 }
+function* watchLoadUser(){
+    yield takeLatest(LOAD_USER_REQUEST, LoadUser);
+}
 
 export default function* userSaga(){
     yield all([
         fork(watchFollow),
+        fork(watchLoadUser),
         fork(watchUnFollow),
         fork(watchLogin),
         fork(watchLogout),

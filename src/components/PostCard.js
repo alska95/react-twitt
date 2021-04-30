@@ -16,9 +16,9 @@ const ButtonGroup = Button.Group;
 const PostCard = ({post}) => {
     const [liked,setLiked] = useState(false);
     const [commentFormOpened , setCommentFormOpened] = useState(false);
-    const me = useSelector((state)=>state.user.user);
+/*    const me = useSelector((state)=>state.user.user);*/
     const removePostLoading = useSelector((state)=> state.post.removePostLoading);
-    const id = me && me.id;
+    const id = useSelector((state) => state.user.user.id);
     const dispatch = useDispatch();
 
     const onToggleLike = useCallback(()=>{
@@ -47,11 +47,12 @@ const PostCard = ({post}) => {
                             <HeartTwoTone twoToneColor = "red" key ="heart" onClick ={onToggleLike}/>
                             :<HeartOutlined key ="heart" onClick ={onToggleLike}/> ,
                     commentFormOpened ?
-                        <MessageTwoTone  key ="commnet" onClick = {onToggleComment}/>:
-                        <MessageOutlined key ="commnet" onClick = {onToggleComment}/>,
+                        <MessageTwoTone  key ="comment" onClick = {onToggleComment}/>:
+                        <MessageOutlined key ="comment" onClick = {onToggleComment}/>,
                     <Popover key ="more" content={(
                         <>
-                            {id && post.User.id === id ?(
+                            {id &&
+                            post.id === id ?(
                                 <ButtonGroup>
                                     <Button>수정</Button>
                                     <Button type={'danger'} onClick={removePost} loading={removePostLoading}>삭제</Button>
@@ -84,7 +85,7 @@ const PostCard = ({post}) => {
                             <li>
                                 <Comment
                                     author={item.User.nickname}
-                                    avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                                    avatar={<Avatar>{item.User.nickname}</Avatar>}
                                     content={item.content}
                                 />
 

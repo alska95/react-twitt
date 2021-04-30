@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {Form, Input ,Button} from "antd";
 import PropTypes from 'prop-types';
 import {useDispatch, useSelector} from "react-redux";
-import {ADD_COMMENT_REQUEST, ADD_POST_REQUEST} from "../reducers/post";
+import {ADD_COMMENT_REQUEST} from "../reducers/post";
 
 /*리덕스 ,리엑트 폼 참고*/
 const CommentForm = ({post}) => {
@@ -26,7 +26,7 @@ const CommentForm = ({post}) => {
         console.log(post.id , commentText);
         dispatch({
             type : ADD_COMMENT_REQUEST,
-            data: {content: commentText , postId: post.id ,userId: id},
+            data: {content: commentText  , postId: post.id ,userId: id},
         });
     } , [commentText , id]);
 

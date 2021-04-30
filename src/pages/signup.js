@@ -16,6 +16,8 @@ const ErrorMessage = styled.div`
 const SignUp = () => {
     const dispatch = useDispatch();
     const signUpLoading = useSelector((state)=>state.user.signUpLoading)
+    const me = useSelector((state)=>state.user.user);
+
 
     const [email , setEmail] = useState("");
     const [password , setPassword] = useState('');
@@ -26,6 +28,16 @@ const SignUp = () => {
 
     const [termError , setTermError] = useState(false);
     const [term , setTerm] = useState("");
+
+    const signUpError = useSelector((state)=> state.user.signUpError);
+
+    useEffect(()=>{
+        if(me && me.id){
+            Router.replace('/');
+        }
+    })
+
+
 
     const onChangePasswordCheck = useCallback((e)=>{
         setPasswordCheck(e.target.value);
@@ -57,7 +69,7 @@ const SignUp = () => {
             return dispatch({
                     type : SIGN_UP_REQUEST,
                     data : {
-                        email, password
+                        email, nickname , password,
                     }
                 }
             )
@@ -73,6 +85,7 @@ const SignUp = () => {
                     <label htmlFor={"user-id"}>이메일</label>
                     <br/>
                     <Input name={"user-id"} value={email} type={"email"} required onChange={onChangeId}/>
+                    {signUpError && <div style={{color : 'red'}}>{signUpError}</div>}
                 </div>
 
                 <div>

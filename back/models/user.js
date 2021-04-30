@@ -1,3 +1,4 @@
+
 module.exports = (sequelize , DataTypes) =>{
     const User = sequelize.define('User' , { //대문자 ->소문자 , s를 붙인다.
         email : {
@@ -27,5 +28,7 @@ module.exports = (sequelize , DataTypes) =>{
         //follower도 마찬가지
         //같은 테이블 안에서 설정할때는 foreignkey를 따로 설정해준다. -->직접 만들어준다.
     };
+
+
     return User;
 }
